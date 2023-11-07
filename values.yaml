@@ -1,0 +1,33 @@
+global:
+  auth:
+    password: &globalAuthPassword "helloworld"
+
+user-db:
+  offsetServerID: 1000
+  auth:
+    password: *globalAuthPassword
+  initDBScripts: &initDBScripts
+    00-setup.sql: |
+      CREATE DATABASE IF NOT EXISTS `helloworld` DEFAULT CHARSET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci';
+
+trade-db:
+  offsetServerID: 2000
+  auth:
+    password: *globalAuthPassword
+  initDBScripts: *initDBScripts
+
+msr-db:
+  offsetServerID: 9999
+  auth:
+    password: *globalAuthPassword
+    replicationPassword: *globalAuthPassword
+  multiSourceReplica:
+    sources:
+    - name: user-db
+      port: 3306
+      user: root
+      password: MYSQL_ROOT_PASSWORD
+    - name: trade-db
+      port: 3306
+      user: root
+      password: MYSQL_ROOT_PASSWORD
